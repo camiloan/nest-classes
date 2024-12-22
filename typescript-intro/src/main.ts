@@ -2,8 +2,12 @@ import "./style.css";
 import typescriptLogo from "./typescript.svg";
 import viteLogo from "/vite.svg";
 import { setupCounter } from "./counter.ts";
-import { charmander } from "./bases/03-classes.ts";
 // import { name, age } from './bases/01-types.ts'
+// import { charmander } from "./bases/02-objects.ts";
+// import { charmander } from "./bases/03-classes.ts";
+// import { charmander } from "./bases/04-injection.ts";
+// import { charmander } from "./bases/05-decorators.ts";
+import { charmander } from "./bases/06-decorators.ts";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
@@ -13,7 +17,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <a href="https://www.typescriptlang.org/" target="_blank">
       <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
     </a>
-    <h1>Hello World ${charmander}</h1>
+    <h1>Hello World ${charmander.name} ${charmander.id}</h1>
     <div class="card">
       <button id="counter" type="button"></button>
     </div>
