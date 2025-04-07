@@ -28,7 +28,7 @@ export class AuthService {
 			return {
 				...result,
 				token: this.getJwtToken({
-					email: result.email,
+					id: result.id,
 				}),
 			};
 		} catch (error) {
@@ -42,7 +42,7 @@ export class AuthService {
 				where: {
 					email: loginUserDto.email,
 				},
-				select: ["email", "password"],
+				select: ["email", "password", "id"],
 			});
 			if (!user) {
 				throw new BadRequestException("Credentials are not valid (email)");
@@ -58,7 +58,7 @@ export class AuthService {
 			return {
 				...result,
 				token: this.getJwtToken({
-					email: result.email,
+					id: result.id,
 				}),
 			};
 		} catch (error) {
