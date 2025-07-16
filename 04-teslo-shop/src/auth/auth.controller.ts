@@ -21,7 +21,8 @@ import { UserRoleGuard } from "./guards/user-role/user-role.guard";
 import { RoleProtected } from "./decorators/role-protected.decorator";
 import { ValidRoles } from "./interfaces";
 import { Auth } from "./decorators";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ResponseLoginUser, ResponseRegisterUserAndCheckStatus } from "./interfaces/response";
 
 
 @ApiTags("Auth")
@@ -30,10 +31,16 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) { }
 
 	@Post("register")
+	@ApiResponse({ status: 201, description: "User was created", type: ResponseRegisterUserAndCheckStatus })
+	@ApiResponse({ status: 400, description: "Bad request" })
 	createUser(@Body() createUserDto: CreateUserDto) {
 		return this.authService.create(createUserDto);
 	}
+
 	@Post("login")
+	@ApiResponse({ status: 201, description: "User login", type: ResponseLoginUser })
+	@ApiResponse({ status: 400, description: "Bad request" })
+	@ApiResponse({ status: 403, description: "Forbidden. Credentials are not valid" })
 	loginUser(@Body() loginUserDto: LoginUserDto) {
 		return this.authService.login(loginUserDto);
 	}
