@@ -2,17 +2,28 @@ import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGa
 import { MessagesWsService } from './messages-ws.service';
 import { Server, Socket } from 'socket.io';
 import { NewMessageDto } from './dtos/new-message.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from 'src/auth/interfaces';
 
 @WebSocketGateway({ cors: true })
 export class MessagesWsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() wss: Server
-  constructor(private readonly messagesWsService: MessagesWsService) { }
+  constructor(private readonly messagesWsService: MessagesWsService,
+    private readonly jwtService: JwtService
+  ) { }
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     const token = client.handshake.headers.authentication as string;
-    console.log(token);
-    this.messagesWsService.registerClient(client);
+    let payload: JwtPayload;
+    try {
+      payload = this.jwtService.verify(token);
+      await this.messagesWsService.registerClient(client, payload.id);
+
+    } catch (error) {
+      client.disconnect();
+      return;
+    }
     this.wss.emit('clients-updated', this.messagesWsService.getConnectClients());
   }
 
@@ -31,7 +42,7 @@ export class MessagesWsGateway implements OnGatewayConnection, OnGatewayDisconne
    /*  client.broadcast.emit('message-from-server', { fullName: client.id, message: payload.message || 'No message provided' }) */;
 
     //! Emite a todos los clientes
-    this.wss.emit('message-from-server', { fullName: client.id, message: payload.message || 'No message provided' });
+    this.wss.emit('message-from-server', { fullName: this.messagesWsService.getUserFullName(client.id), message: payload.message || 'No message provided' });
 
   }
 

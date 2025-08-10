@@ -1,15 +1,21 @@
 import { Manager, Socket } from 'socket.io-client'
+
+let socket: Socket
+
+
 export const connectToServer = (token: string) => {
 
     const manager = new Manager('http://localhost:3000/socket.io/socket.io.js', { extraHeaders: { hola: 'mundo', authentication: token } })
 
-    const socket = manager.socket('/')
+    socket?.removeAllListeners()
+    socket = manager.socket('/')
 
-    addListeners(socket)
+
+    addListeners()
 }
 
 
-const addListeners = (socket: Socket) => {
+const addListeners = () => {
 
     const clientsUl = document.querySelector<HTMLUListElement>('#clients-ul')!
     const serverStatus = document.querySelector<HTMLSpanElement>('#server-status')!
@@ -17,10 +23,10 @@ const addListeners = (socket: Socket) => {
     const messageForm = document.querySelector<HTMLFormElement>('#message-form')!
     const messagesUl = document.querySelector<HTMLUListElement>('#messages-ul')!
     socket.on('connect', () => {
-        serverStatus.innerText = 'Online'
+        serverStatus.innerText = 'Connected'
     })
     socket.on('disconnect', () => {
-        serverStatus.innerText = 'Offline'
+        serverStatus.innerText = 'Disconnected'
     })
     socket.on('clients-updated', (clients: string[]) => {
         let clientsHtml = '';
