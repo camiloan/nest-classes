@@ -13,6 +13,8 @@ const addListeners = (socket: Socket) => {
 
     const clientsUl = document.querySelector<HTMLUListElement>('#clients-ul')!
     const serverStatus = document.querySelector<HTMLSpanElement>('#server-status')!
+    const messageInput = document.querySelector<HTMLInputElement>('#message-input')!
+    const messageForm = document.querySelector<HTMLFormElement>('#message-form')!
     socket.on('connect', () => {
         serverStatus.innerText = 'Online'
     })
@@ -25,5 +27,15 @@ const addListeners = (socket: Socket) => {
             clientsHtml += `<li>${clientId}</li>`
         })
         clientsUl.innerHTML = clientsHtml
+    })
+
+    messageForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        if (messageInput.value.trim().length <= 0) return;
+
+
+        socket.emit('message-from-client', { id: socket.id, message: messageInput.value })
+        messageInput.value = ''
+
     })
 }
